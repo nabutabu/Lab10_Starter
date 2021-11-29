@@ -11,6 +11,7 @@
   <!-- Main Stylesheet & Scripts -->
   <link rel="stylesheet" href="assets/styles/global.css" />
   <script src="assets/scripts/speechSynth.js" type="module"></script>
+  <script src="https://unpkg.com/launchdarkly-js-client-sdk@2"></script>
 </head>
 
 <body>
@@ -29,9 +30,40 @@
       <select name="voice" id="voice-select">
         <option value="select" disabled selected>Select Voice:</option>
       </select>
-      <button>Press to Talk</button>
+      <button class='talkButton'>Press to Talk</button>
     </section>
   </main>
+  <script>
+    var user = {
+      key: 0,
+    };
+  
+    if(localStorage.getItem('userKey')) {
+      user.key = localStorage.getItem('userKey');
+      user.key += 1;
+      console.log(user.key);
+      localStorage.setItem('userKey', user.key);
+    }
+    else {
+      localStorage.setItem('userKey', user.key);
+    }
+    
+    var ldclient = LDClient.initialize('61a4007c98962e0fabedf5c1', user);
+  
+    function render() {
+      var shouldShow = ldclient.variation('talk', false);
+      if(shouldShow) {
+        var button = document.querySelector('.talkButton');
+        button.innerHTML = 'Talk';
+      } else {
+        var button = document.querySelector('.talkButton');
+        button.innerHTML = 'Press to Talk';
+      }
+    }
+  
+    ldclient.on('ready', render);
+    ldclient.on('change', render);
+  </script>
 </body>
 
 </html>

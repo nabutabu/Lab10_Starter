@@ -14,9 +14,10 @@
   <!-- Main Stylesheet & Scripts -->
   <link rel="stylesheet" href="assets/styles/global.css" />
   <script src="assets/scripts/partyHorn.js" type="module"></script>
+  <script src="https://unpkg.com/launchdarkly-js-client-sdk@2"></script>
 </head>
 
-<body>
+<body class="blue">
   <header>
     <nav>
       <a href="speechSynth.html" title="Go to speech synthesizer">Speech Synthesizer</a>
@@ -42,6 +43,36 @@
       <audio class="hidden" src=""></audio>
     </section>
   </main>
+  <script>
+    var user = {
+      key: 0,
+    };
+  
+    if(localStorage.getItem('userKey')) {
+      user.key = localStorage.getItem('userKey');
+      user.key += 1;
+      console.log(user.key);
+      localStorage.setItem('userKey', user.key);
+    }
+    else {
+      localStorage.setItem('userKey', user.key);
+    }
+    
+    var ldclient = LDClient.initialize('61a4007c98962e0fabedf5c1', user);
+  
+    function render() {
+      var shouldShow = ldclient.variation('blue-background', false);
+      if(shouldShow) {
+        document.body.classList.add('blue');
+      } else {
+        document.body.classList.remove('blue');
+      }
+    }
+  
+    ldclient.on('ready', render);
+    ldclient.on('change', render);
+  </script>
+  
 </body>
 
 </html>
